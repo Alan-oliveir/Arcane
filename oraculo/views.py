@@ -94,4 +94,11 @@ def stream_response(request):
 
 
 def ver_fontes(request, id):
-    return render(request, 'ver_fontes.html')
+    pergunta = Pergunta.objects.get(id=id)
+    for i in pergunta.data_treinamento.all():
+        print(i.metadata)
+        print(i.texto)
+        print('---')
+    print(pergunta.pergunta)
+
+    return render(request, 'ver_fontes.html', {'pergunta': pergunta})
