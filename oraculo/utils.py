@@ -1,9 +1,20 @@
+import datetime
+from datetime import datetime, timedelta
 from typing import List
 
 import requests
+from apscheduler.schedulers.background import BackgroundScheduler
 from bs4 import BeautifulSoup
+from django.core.cache import cache
 from langchain.docstore.document import Document
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+
+from .wrapper_evolutionapi import SendMessage
+
+scheduler = BackgroundScheduler()
+scheduler.start()
 
 
 def html_para_texto_rag(html_str: str) -> str:
@@ -50,3 +61,44 @@ def gerar_documentos(instance) -> List[Document]:
         documentos.append(Document(page_content=instance.conteudo))
 
     return documentos
+
+
+def send_message_response(phone):
+    messages = cache.get(f"wa_buffer_{phone}", [])
+    if messages:
+        question = "\n".join(messages)
+        embeddings = OpenAIEmbeddings()
+        vectordb = FAISS.load_local("banco_faiss", embeddings, allow_dangerous_deserialization=True)
+        docs = vectordb.similarity_search(question, k=5)
+        context = "\n\n".join([doc.page_content for doc in docs])
+
+        messages = [
+            {"role": "system",
+             "content": f"Você é um assistente virtual e deve responder com precissão as perguntas sobre uma empresa.\n\n{context}"},
+            {"role": "user", "content": question}
+        ]
+
+        llm = ChatOpenAI(
+            model_name="gpt-3.5-turbo",
+            temperature=0,
+        )
+
+        response = llm.invoke(messages).content
+
+        SendMessage().send_message('arcane', {"number": phone, "textMessage": {"text": response}})
+
+        cache.delete(f"wa_buffer_{phone}")
+        cache.delete(f"wa_timer_{phone}")
+
+
+def sched_message_response(phone):
+    if not cache.get(f'wa_timer_{phone}'):
+        print('Agendando')
+        scheduler.add_job(
+            send_message_response,
+            'date',
+            run_date=datetime.now() + timedelta(seconds=15),
+            kwargs={'phone': phone},
+            misfire_grace_time=60
+        )
+        cache.set(f'wa_timer_{phone}', True, timeout=60)

@@ -1,7 +1,10 @@
+import json
 from pathlib import Path
 
 from django.conf import settings
+from django.core.cache import cache
 from django.http import Http404, JsonResponse
+from django.http import HttpResponse
 from django.http import StreamingHttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +15,7 @@ from rolepermissions.checkers import has_permission
 
 from .models import DataTreinamento
 from .models import Treinamentos, Pergunta
+from .utils import sched_message_response
 
 
 def treinar_ia(request):
@@ -103,3 +107,21 @@ def ver_fontes(request, id):
     print(pergunta.pergunta)
 
     return render(request, 'ver_fontes.html', {'pergunta': pergunta})
+
+
+@csrf_exempt
+def webhook_whatsapp(request):
+    data = json.loads(request.body)
+    phone = data.get('data').get('key').get('remoteJid').split('@')[0]
+    message = data.get('data').get('message').get('extendedTextMessage').get('text')
+
+    buffer = cache.get(f'wa_buffer_{phone}', [])
+    buffer.append(message)
+
+    cache.set(f'wa_buffer_{phone}', buffer, timeout=120)
+
+    sched_message_response(phone)
+
+    print(buffer)
+
+    return HttpResponse('teste')
