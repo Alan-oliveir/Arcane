@@ -94,6 +94,7 @@ def stream_response(request):
 
 
 def ver_fontes(request, id):
+    print("ID recebido:", id)
     pergunta = Pergunta.objects.get(id=id)
     for i in pergunta.data_treinamento.all():
         print(i.metadata)
