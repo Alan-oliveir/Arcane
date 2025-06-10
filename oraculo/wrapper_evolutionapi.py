@@ -60,5 +60,4 @@ class SendMessage(BaseEvolutionAPI):
         return self._send_request(path, method='POST', body=body)
 
 
-SendMessage().send_message('arcane',
-                           {'number': '1234567890', 'textMessage': {'text': 'Olá, estou enviando uma mensagem.'}})
+# SendMessage().send_message('arcane',{'number': '1234567890', 'textMessage': {'text': 'Olá, estou enviando uma mensagem.'}})
