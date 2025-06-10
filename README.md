@@ -4,7 +4,7 @@
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=chainlink&logoColor=white)  
 
-Este repositório é um **clone** do projeto desenvolvido durante o evento [**ARCANE – Pythonando**](https://pythonando.com.br/eventos/arcane/), uma imersão prática em **IA Agentica** e **desenvolvimento web com Python/Django**.
+Este repositório é um **clone** do projeto desenvolvido durante o evento [**ARCANE – Pythonando**](https://pythonando.com.br/), uma imersão prática em **IA Agentica** e **desenvolvimento web com Python/Django**.
 
 ---
 
@@ -35,6 +35,6 @@ Este projeto utiliza tecnologias modernas de IA e desenvolvimento web, servindo 
 
 ## 🙏 Agradecimentos e Créditos
 
-Agradeço à equipe da **[Pythonando](https://www.instagram.com/pythonando/)** pelo evento gratuito e pelo conteúdo de qualidade.
+Agradeço à equipe da **[Pythonando](https://pythonando.com.br/)** pelo evento gratuito e pelo conteúdo de qualidade.
 
 > 🔗 Repositório original: [github.com/Pythonando/arcane-final](https://github.com/Pythonando/arcane-final)
